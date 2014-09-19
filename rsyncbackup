@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# run via cron ex.
+# 0 3 * * * bash /path/to/script >> /path/to/log 2>&1
+
+BACKUPDIR=backup/`date +%d`
+SYNCFROM=/media/mike/Ext1/
+SYNCTO=/media/mike/Ext2/
+
+if [ -d $SYNCFROM -a -d $SYNCTO ];
+then
+    echo $'\n\n'
+    echo $'-----------------------'
+    echo $'\n'`date +%Y-%m-%d`$'\n'
+
+    if [ -d $SYNCTO$BACKUPDIR ];
+    then
+        echo $'\nRemoving '$BACKUPDIR$'\n'
+        rm -rf $SYNCTO$BACKUPDIR
+    fi
+    
+    echo $'\nSyncing\n'
+    rsync -brushtogmAX --stats --delete --backup-dir=$BACKUPDIR --exclude=backup --exclude='/.Trash-1000/' $SYNCFROM $SYNCTO
+    echo $'\nDone'
+else
+    echo $'\n\n'
+    echo $'-----------------------'
+    echo $'\n'`date +%Y-%m-%d`$'\n'
+    echo $'One of the dirs is missing!.'
+fi
